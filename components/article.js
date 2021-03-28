@@ -1,4 +1,4 @@
-import { Card, Collapse } from 'antd'
+import { Card, Collapse, Image } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 const { Panel } = Collapse;
 
@@ -24,14 +24,19 @@ function toEllapse(timestamp) {
 
 function ArticleMin({ props }) {
     const elapseString = toEllapse(props.article.timestamp);
+    let Img = <></>;
+
+    if ('mediaURLs' in props.article && props.article.mediaURLs.length != 0) {
+        Img = <Image src={props.article.mediaURLs[0]} width={180}></Image>
+    }
     return (
         <Card hoverable key={props.index}>
             <Meta title={props.article.title} description={`${props.article.publisher} ${elapseString}`}></Meta>
             <p>{props.article.description}</p>
+            {Img}
         </Card>
-
 
     )
 }
 
-export { ArticleMin }
+export { ArticleMin };

@@ -1,20 +1,17 @@
 
-import { ReadOutlined, MailOutlined, BoldOutlined } from '@ant-design/icons';
+import { Card, Col, Layout, Menu, Row } from 'antd';
 import 'antd/dist/antd.css';
-import Head from 'next/head';
-import { Layout, Menu, Row, Col, Card } from 'antd'
-import { ArticleMin } from '../components/article';
-import { PriceTag } from '../components/price';
-import PageLayout from '../components/layout'
-import { getAllPublisher, getLatest,getArticle ,getCluster} from '../lib/article';
-import { getPrice } from '../lib/price';
 import React from 'react';
 import { ClusterMin } from '../components/cluster';
+import PageLayout from '../components/layout';
+import { PriceTag } from '../components/price';
+import { getAllPublisher, getArticle, getCluster } from '../lib/article';
+import { getPrice } from '../lib/price';
 
 const { Header, Footer, Sider, Content } = Layout;
 const { SubMenu } = Menu;
 
-class Home extends React.Component {
+class Cluster extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +28,7 @@ class Home extends React.Component {
 
   render() {
     const prices = this.props.prices;
-    const articles = this.props.articles;
+    const clusters = this.props.clusters;
 
     const pricesList = () => {
       return prices.map((o, i) => {
@@ -44,24 +41,27 @@ class Home extends React.Component {
         )
       });
     };
-    const articleList = (() => {
-      return articles.map((o, i) => {
+
+    const clusterList = () => {
+      return clusters.map((o) => {
         let pr = {
-          index: `article_${i}`,
-          article: o
-        };
+          index: `cluster_${o.id}`,
+          articles: o.member
+        }
         return (
-          <ArticleMin props={pr}></ArticleMin>
-        );
-      });
-    });
+          <ClusterMin props={pr}></ClusterMin>
+        )
+      })
+    }
+
+
     return (
       <PageLayout title="STH" publishers={this.props.publishers}>
         <Content style={{ padding: '0 50px' }}>
           <Row gutter={24}>
             <Col span={16}>
-              <Card title='Tin tức mới nhất'>
-                {articleList()}
+              <Card title='Chủ đề mới nhất'>
+                {clusterList()}
               </Card>
             </Col>
             <Col span={8}>
@@ -81,16 +81,29 @@ class Home extends React.Component {
 export async function getStaticProps(ctx) {
   const pnjPrice = await getPrice('PNJ');
   const sjcPrice = await getPrice('SJC');
-  const articles = await getLatest(10);
+  let clusters = await getCluster(5);
+  clusters = clusters.map((o)=>{
+    // console.log(o['member'])
+    const size = Math.min(o['member'].length, 10);
+    return {'id': o['cid'], 'member': o['member'].splice(0, size)};
+  });
+  let datas = [];
+  let i;
+  for (i = 0 ; i < clusters.length;i ++){
+    let c = clusters[i];
+    const articleData = await Promise.all(c.member.map(x => getArticle(x)));
+    datas.push({'id':c.id, 'member':articleData});
+  } 
+  
   const publishers = await getAllPublisher();
 
   return {
     props: {
       prices: [pnjPrice, sjcPrice],
-      articles: articles,
       publishers: publishers,
+      clusters: datas
     }
   };
 }
 
-export default Home;
+export default Cluster;

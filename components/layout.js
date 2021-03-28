@@ -1,6 +1,6 @@
-import React from 'react'
-import {Row, Col, Layout, Menu } from 'antd'
-import { ReadOutlined, HomeOutlined } from '@ant-design/icons'
+import React, {useState} from 'react'
+import { Row, Col, Layout, Menu, Affix} from 'antd'
+import { ReadOutlined, HomeOutlined,GroupOutlined } from '@ant-design/icons'
 import Head from 'next/head'
 import Link from 'next/link'
 
@@ -32,17 +32,23 @@ class PageLayout extends React.Component {
         <Head>
           <title>{this.props.title}</title>
         </Head>
-        <Header>          
+        <Affix offsetTop={0}>
+        <Header>
+          
             <Menu theme='dark' mode='horizontal'>
               <Menu.Item key='Home' icon={<HomeOutlined />} title='Trang chủ'>
-              <Link href='/'>Trang chủ</Link>
+                <Link href='/'>Trang chủ</Link>
+              </Menu.Item>
+              <Menu.Item key='Cluster' icon={<GroupOutlined />} title='Chủ đề mới nhất'>
+              <Link href='/cluster'>Chủ đề mới nhất</Link>
               </Menu.Item>
               <SubMenu key='Publisher' icon={<ReadOutlined />} title='Nhà phát hành'>
                 {publisherList()}
               </SubMenu>
-            </Menu>       
-
+            </Menu>
+          
         </Header>
+        </Affix>
         <Layout>
           <Content style={{ padding: '0 50px' }}>
             {this.props.children}
