@@ -1,51 +1,65 @@
-import { Col, Card, Row, Layout } from 'antd';
+import React, { ReactNode } from 'react';
 import 'antd/dist/antd.css';
-import React from 'react';
+import { Card, Layout, Row, Col } from 'antd';
+import PageLayout from '../../components/layout';
 import { ArticleMin } from '../../components/article';
-import PageLayout from '../../components/layout'
-import { getAllCategory, getAllPublisher, getPublisherLatest } from '../../lib/article';
+import { getAllCategory, getCategoryLatest } from '../../lib/article';
 
 const { Content } = Layout;
+interface CategoryProps {
+    categoryName: string,
 
-class PublisherHomePage extends React.Component {
-    constructor(props) {
+}
+interface CategoryStates {
+    categoryName: string,
+    articles: any[]
+
+}
+
+
+
+export default class CategoryHomePage extends React.Component<CategoryProps, CategoryStates> {
+
+    /**
+     *
+     */
+    constructor(props: CategoryProps) {
         super(props);
         this.state = {
-            publisherName: this.props.publisherName,
-            articles: new Array(0),
+            categoryName: props.categoryName,
+            articles: new Array(0)
         }
     }
     componentDidMount() {
-        getPublisherLatest(this.props.publisherName, 10).then((value) => {
+        getCategoryLatest(this.props.categoryName, 10).then((value: any[]) => {
             this.setState({
                 articles: value,
-                publisherName: this.props.publisherName
-            });;
+                categoryName: this.props.categoryName
+            });
         }).catch(err => {
             console.error(err);
-        });
+        })
     }
+
     componentDidUpdate() {
-        if (this.state.publisherName != this.props.publisherName) {
-            getPublisherLatest(this.props.publisherName, 10).then((value) => {
+        if (this.state.categoryName != this.props.categoryName) {
+            getCategoryLatest(this.props.categoryName, 10).then((value: any[]) => {
                 this.setState({
-                    publisherName: this.props.publisherName,
+                    categoryName: this.props.categoryName,
                     articles: value
-                });
+                });;
             }).catch(err => {
                 console.error(err);
             });
         }
     }
     render() {
-
-        const publisherLatest = Array.from(this.state.articles).map((o, i) => {
-            o.publisher = this.state.publisherName;
+        const categoryLatest = Array.from(this.state.articles).map((o, i) => {
+            o.category = this.state.categoryName;
             let pr = {
                 index: `a_${i}`,
                 article: o
             };
-            console.log(i);
             return (
                 <ArticleMin props={pr}></ArticleMin>
             );
@@ -56,24 +70,24 @@ class PublisherHomePage extends React.Component {
                     <Row gutter={16}>
                         <Col span={16}>
                             <Card title='Tin tức mới nhất'>
-                                {publisherLatest}
+                                {categoryLatest}
                             </Card>
                         </Col>
                     </Row>
                 </Content>
             </PageLayout>
         );
-    };
+    }
 }
 
 export async function getStaticPaths() {
-    let publisherList = await getAllPublisher();
-    const paths = publisherList.map((o, i) => {
+    let categoryList: string[] = await getAllCategory();
+    const paths = categoryList.map((o, i) => {
         return {
             params: {
-                publisher: o
+                category: o
             }
-        }
+        };
     });
     return {
         paths,
@@ -82,12 +96,10 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-    const publisherName = params.publisher;
+    const categoryName = params.category;
     return {
         props: {
-            publisherName: publisherName,
+            categoryName: categoryName,
         }
-    };
+    }
 }
-
-export default PublisherHomePage;
