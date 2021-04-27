@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Row, Col, Layout, Menu, Affix } from 'antd'
+import { Row, Col, Layout, Menu, Affix, Input } from 'antd'
 import { ReadOutlined, HomeOutlined, GroupOutlined, PartitionOutlined } from '@ant-design/icons'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -9,6 +9,7 @@ import MenuItem from 'antd/lib/menu/MenuItem'
 import { AppProvider } from '../contexts/appContext'
 
 const { Header, Footer, Content } = Layout;
+const { Search } = Input;
 const { SubMenu } = Menu;
 class PageLayout extends React.Component {
   constructor(props) {
@@ -62,22 +63,24 @@ class PageLayout extends React.Component {
           </Head>
           <Affix offsetTop={0}>
             <Header>
-
-              <Menu theme='dark' mode='horizontal'>
-                <Menu.Item key='Home' icon={<HomeOutlined />} title='Trang chủ'>
-                  <Link href='/'>Trang chủ</Link>
-                </Menu.Item>
-                <Menu.Item key='Cluster' icon={<GroupOutlined />} title='Chủ đề mới nhất'>
-                  <Link href='/cluster'>Chủ đề mới nhất</Link>
-                </Menu.Item>
-                <SubMenu key='Publisher' icon={<ReadOutlined />} title='Nhà phát hành'>
-                  {publisher}
-                </SubMenu>
-                <SubMenu key='Category' icon={<PartitionOutlined />} title='Thể loại'>
-                  {category}
-                </SubMenu>
-              </Menu>
-
+              <Row>
+                <Col span={8}>
+                  <Menu theme='dark' mode='horizontal'>
+                    <Menu.Item key='Home' icon={<HomeOutlined />} title='Trang chủ'>
+                      <Link href='/'>Trang chủ</Link>
+                    </Menu.Item>
+                    <Menu.Item key='Cluster' icon={<GroupOutlined />} title='Chủ đề mới nhất'>
+                      <Link href='/cluster'>Chủ đề mới nhất</Link>
+                    </Menu.Item>
+                    <SubMenu key='Publisher' icon={<ReadOutlined />} title='Nhà phát hành'>
+                      {publisher}
+                    </SubMenu>
+                    <SubMenu key='Category' icon={<PartitionOutlined />} title='Thể loại'>
+                      {category}
+                    </SubMenu>
+                  </Menu>
+                </Col>
+              </Row>
             </Header>
           </Affix>
         </AppProvider>

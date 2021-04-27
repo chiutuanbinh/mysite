@@ -2,17 +2,17 @@
 import { ReadOutlined, MailOutlined, BoldOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import Head from 'next/head';
-import { Layout, Menu, Row, Col, Card } from 'antd'
+import { Layout, Menu, Row, Col, Card, Input } from 'antd'
 import { ArticleMin } from '../components/article';
 import { PriceTag } from '../components/price';
 import PageLayout from '../components/layout'
-import { getAllPublisher, getLatest,getArticle ,getCluster, getAllCategory} from '../lib/article';
+import { getAllPublisher, getLatest,getArticle ,getCluster, getAllCategory, searchArticle} from '../lib/article';
 import { getPrice } from '../lib/price';
 import React from 'react';
 import { ClusterMin } from '../components/cluster';
 
 const { Header, Footer, Sider, Content } = Layout;
-const { SubMenu } = Menu;
+const { Search } = Input;
 
 class Home extends React.Component {
   constructor(props) {
@@ -70,9 +70,24 @@ class Home extends React.Component {
         <PriceTag props={pr}></PriceTag>
       );});
 
+    let onSearch = (value) => { 
+      searchArticle(value).then(
+        (res)=> {
+          console.log(res);
+          this.setState({articles:res});
+        }
+      ).catch(err => {
+        console.error(err);
+      })
+    };
+
     return (
       <PageLayout title="STH" publishers={this.props.publishers} categories={this.props.categories}>
         <Content style={{ padding: '0 50px' }}>
+          <Row>
+            <Search style={{ marginTop: "3%" }} placeholder="input search text" allowClear onSearch={onSearch} enterButton />
+          </Row>
+          <Row/>
           <Row gutter={24}>
             <Col span={16}>
               <Card title='Tin tức mới nhất'>
